@@ -4,20 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#0f172a">
-    
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="icon.png">
-    <link rel="icon" type="image/png" href="icon.png">
-    
     <title>EcoPoint Pro</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
     <style>
-        /* CSS Dəyişənləri */
+        /* --- DİZAYN SİSTEMİ --- */
         :root { 
             --bg-body: #0f172a; 
             --bg-card: #1e293b; 
@@ -38,60 +33,62 @@
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-        body { margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; transition: background 0.3s; overflow-x: hidden; }
+        body { margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; transition: background 0.3s; }
 
-        /* GİRİŞ SƏHİFƏSİ */
+        /* GİRİŞ EKRANI */
         #auth-view { position: fixed; inset: 0; z-index: 5000; background: radial-gradient(circle at top right, #004d3d, var(--bg-body)); display: flex; flex-direction: column; justify-content: flex-end; padding: 40px; }
         .auth-btn { width: 100%; padding: 18px; background: #fff; color: #000; border: none; border-radius: 18px; font-weight: 700; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 12px; cursor: pointer; }
 
         /* ƏSAS TƏTBİQ */
-        #app-view { display: none; flex: 1; flex-direction: column; opacity: 0; transition: opacity 0.8s ease-in-out; }
+        #app-view { display: none; flex: 1; flex-direction: column; }
 
         /* Header */
         .header { padding: 50px 20px 15px; display: flex; justify-content: space-between; align-items: center; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); z-index: 100; position: sticky; top: 0; }
         .user-chip { display: flex; align-items: center; gap: 12px; background: var(--bg-card); padding: 6px 16px 6px 6px; border-radius: 50px; border: 1px solid var(--border); }
         .u-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover; }
-        .admin-badge { display: none; background: var(--admin-color); color: #000; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 800; margin-left: 5px; }
-
         .header-actions { display: flex; gap: 10px; }
-        .icon-btn { width: 40px; height: 40px; border-radius: 50%; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .icon-btn { width: 40px; height: 40px; border-radius: 50%; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 700; font-size: 12px; }
 
         /* Məzmun */
         .content { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 120px; }
-        .page { display: none; animation: fadeIn 0.4s; }
+        .page { display: none; animation: fadeIn 0.3s; }
         .page.active { display: block; }
         .card { background: var(--bg-card); border-radius: 24px; padding: 25px; border: 1px solid var(--border); margin-bottom: 15px; }
 
-        /* ADMIN PANEL DİZAYNI */
-        .admin-box { display: none; border: 2px solid var(--admin-color); background: rgba(245, 158, 11, 0.05); }
-        .admin-input { width: 100%; background: var(--bg-body); border: 1px solid var(--border); padding: 15px; color: var(--text-main); border-radius: 15px; margin-bottom: 12px; font-size: 14px; }
-        .admin-btn { background: var(--admin-color); color: #000; width: 100%; padding: 15px; border: none; border-radius: 15px; font-weight: 700; cursor: pointer; margin-top: 5px; }
-        .user-scroll-area { margin-top: 15px; max-height: 250px; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 15px; padding: 10px; border: 1px solid var(--border); }
-        .user-card { padding: 12px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 4px; text-align: left; }
-        .user-card b { color: var(--primary); font-size: 13px; }
-        .user-card span { font-size: 10px; color: var(--text-muted); }
-
-        /* Balans Kartı */
+        /* Balans */
         .balance-hero { background: linear-gradient(135deg, var(--bg-card), #000); border: 1px solid var(--primary); padding: 30px 25px; position: relative; overflow: hidden; }
         .balance-val { font-size: 48px; font-weight: 800; color: var(--text-main); }
-        
-        /* Fəaliyyət Düymələri */
-        .action-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 25px 0; }
-        .act-btn { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 15px 5px; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; transition: transform 0.2s; }
-        .act-btn:active { transform: scale(0.95); }
-        .act-icon { width: 40px; height: 40px; background: rgba(0, 255, 136, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 18px; }
-        .act-btn span { font-size: 11px; font-weight: 600; }
 
-        /* Menu */
+        /* Düymələr Qridi */
+        .action-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 25px 0; }
+        .act-btn { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 15px; display: flex; flex-direction: row; align-items: center; gap: 12px; cursor: pointer; }
+        .act-icon { width: 40px; height: 40px; background: rgba(0, 255, 136, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 18px; }
+        .act-text { font-size: 13px; font-weight: 600; }
+
+        /* Admin Panel */
+        .admin-box { display: none; border: 2px solid var(--admin-color); background: rgba(245, 158, 11, 0.05); }
+        .admin-input { width: 100%; background: var(--bg-body); border: 1px solid var(--border); padding: 15px; color: var(--text-main); border-radius: 15px; margin-bottom: 10px; }
+        .admin-btn { width: 100%; background: var(--admin-color); color: #000; padding: 15px; border-radius: 15px; border: none; font-weight: 700; cursor: pointer; }
+
+        /* Kamera/Skaner */
+        #scanner-modal { display: none; position: fixed; inset: 0; background: #000; z-index: 6000; flex-direction: column; }
+        #reader { width: 100%; height: 100%; object-fit: cover; }
+        .close-scan { position: absolute; top: 20px; right: 20px; color: white; background: red; padding: 10px 20px; border-radius: 10px; z-index: 6001; cursor: pointer; font-weight: bold; }
+
+        /* Naviqasiya */
         .nav { position: fixed; bottom: 0; width: 100%; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); padding: 15px 25px 35px; display: flex; justify-content: space-between; border-top: 1px solid var(--border); z-index: 1000; }
         .nav-item { display: flex; flex-direction: column; align-items: center; gap: 5px; color: var(--text-muted); font-size: 11px; font-weight: 600; cursor: pointer; }
         .nav-item.active { color: var(--primary); }
-        .scan-fab { width: 75px; height: 75px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; color: #000; border: 8px solid var(--bg-body); position: relative; top: -45px; box-shadow: 0 10px 20px rgba(0, 255, 136, 0.4); cursor: pointer; }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
+
+    <div id="scanner-modal">
+        <div class="close-scan" onclick="closeScanner()">X BAĞLA</div>
+        <div id="reader"></div>
+    </div>
 
     <div id="auth-view">
         <div style="margin-top: auto; margin-bottom: 50px;">
@@ -100,7 +97,7 @@
             <p style="color:var(--text-muted); margin-bottom:35px;">Təmiz gələcək üçün.</p>
             <button class="auth-btn" onclick="login()">
                 <i class="fa-brands fa-google" style="font-size: 20px;"></i>
-                <span>Google ilə giriş</span>
+                <span data-key="login_btn">Google ilə giriş</span>
             </button>
         </div>
     </div>
@@ -111,75 +108,87 @@
                 <img src="" id="u-img" class="u-avatar">
                 <div style="display:flex; flex-direction:column;">
                     <span id="u-name" style="font-size: 14px; font-weight: 800;">...</span>
-                    <span id="admin-tag" class="admin-badge">ADMIN</span>
+                    <span id="admin-badge" style="display:none; color:var(--admin-color); font-size:10px; font-weight:800;">ADMIN</span>
                 </div>
             </div>
-            
             <div class="header-actions">
                 <div class="icon-btn" onclick="toggleTheme()"><i class="fa-solid fa-moon"></i></div>
-                <div class="icon-btn" onclick="toggleLang()">AZ</div>
-                <div class="icon-btn" onclick="logout()" style="border-color: #ef4444; color: #ef4444;"><i class="fa-solid fa-right-from-bracket"></i></div>
+                <div class="icon-btn" onclick="toggleLang()" id="lang-btn">AZ</div>
+                <div class="icon-btn" onclick="logout()" style="color:#ef4444; border-color:#ef4444;"><i class="fa-solid fa-right-from-bracket"></i></div>
             </div>
         </div>
 
         <div class="content">
+            
             <div id="page-home" class="page active">
                 
                 <div id="admin-panel" class="card admin-box">
-                    <h3 style="color: var(--admin-color); margin-top: 0;"><i class="fa-solid fa-crown"></i> ADMIN PANEL</h3>
-                    
-                    <label style="font-size:12px; color:var(--text-muted);">Xal Göndər:</label>
-                    <input type="text" id="target-uid" class="admin-input" placeholder="İstifadəçi UID (Boş burax = Hamıya)">
-                    <input type="number" id="target-amount" class="admin-input" placeholder="Miqdar (məs: 50)">
-                    <button class="admin-btn" onclick="adminSendPoints()">GÖNDƏR 🚀</button>
-                    
-                    <div style="margin-top:20px;">
-                        <span style="font-size: 12px; color: var(--admin-color); font-weight: 800;">İstifadəçilər:</span>
-                        <div id="admin-user-list" class="user-scroll-area">
-                            <p style="font-size:11px; text-align:center;">Yüklənir...</p>
-                        </div>
-                    </div>
+                    <h3 style="color:var(--admin-color); margin-top:0;">ADMIN PANEL</h3>
+                    <input type="text" id="target-uid" class="admin-input" placeholder="User UID">
+                    <input type="number" id="target-amount" class="admin-input" placeholder="Amount">
+                    <button class="admin-btn" onclick="adminSend()">Xal Göndər 🚀</button>
+                    <div style="margin-top:10px; font-size:12px;" id="admin-list"></div>
                 </div>
 
                 <div class="card balance-hero">
-                    <div id="bal-label" style="font-size: 14px; color: var(--primary); font-weight: 800;">ÜMUMİ BALANS</div>
-                    <div style="display: flex; align-items: baseline; gap: 12px; margin-top: 10px;">
+                    <div style="font-size:14px; color:var(--primary); font-weight:800;" data-key="balance_title">ÜMUMİ BALANS</div>
+                    <div style="display:flex; align-items:baseline; gap:10px; margin-top:5px;">
                         <div class="balance-val" id="balance-display">0</div>
-                        <span style="color: var(--primary); font-weight: 800;">EP</span>
+                        <span style="color:var(--primary); font-weight:800;">EP</span>
                     </div>
-                    <i class="fa-solid fa-leaf" style="position: absolute; right: -20px; bottom: -20px; font-size: 100px; opacity: 0.1; color: var(--primary);"></i>
                 </div>
-                
+
                 <div class="action-grid">
-                    <div class="act-btn" onclick="openScanner()"><div class="act-icon"><i class="fa-solid fa-qrcode"></i></div><span>Skan</span></div>
-                    <div class="act-btn" onclick="shareApp()"><div class="act-icon"><i class="fa-solid fa-share-nodes"></i></div><span>Dostuna</span></div>
-                    <div class="act-btn" onclick="switchTab('market')"><div class="act-icon"><i class="fa-solid fa-bag-shopping"></i></div><span>Market</span></div>
-                    <div class="act-btn" onclick="window.open('https://greenlinegroupazerbaijan2026.netlify.app/', '_blank')"><div class="act-icon"><i class="fa-solid fa-circle-info"></i></div><span>Haqqımızda</span></div>
+                    <div class="act-btn" onclick="startScanner()">
+                        <div class="act-icon"><i class="fa-solid fa-qrcode"></i></div>
+                        <span class="act-text" data-key="scan">Skan Et</span>
+                    </div>
+                    <div class="act-btn" onclick="transferPoints()">
+                        <div class="act-icon"><i class="fa-solid fa-paper-plane"></i></div>
+                        <span class="act-text" data-key="send">Xal Göndər</span>
+                    </div>
+                    <div class="act-btn" onclick="window.open('https://greenlinegroupazerbaijan2026.netlify.app/', '_blank')">
+                        <div class="act-icon"><i class="fa-solid fa-globe"></i></div>
+                        <span class="act-text" data-key="about">Haqqımızda</span>
+                    </div>
+                    <div class="act-btn" onclick="window.open('https://gamma.app/docs/EcoPoint-Agll-Zibil-Daha-Cox-Mukafat-vvx39v1c26436s1', '_blank')">
+                        <div class="act-icon"><i class="fa-solid fa-book"></i></div>
+                        <span class="act-text" data-key="learn_more">Daha Çox</span>
+                    </div>
                 </div>
             </div>
-            
+
             <div id="page-market" class="page">
-                <h2 style="margin-top:0;">Market</h2>
-                <div class="card">
-                    <p style="text-align:center; color:var(--text-muted);">Tezliklə açılacaq...</p>
+                <h2 data-key="market">Market</h2>
+                <div class="card" style="text-align:center; padding:40px;">
+                    <i class="fa-solid fa-store" style="font-size:40px; color:var(--text-muted); margin-bottom:20px;"></i>
+                    <h3 data-key="coming_soon">Tezliklə...</h3>
+                </div>
+            </div>
+
+            <div id="page-leaderboard" class="page">
+                <h2 data-key="leaderboard">Liderlər</h2>
+                <div class="card" style="text-align:center; padding:40px;">
+                    <i class="fa-solid fa-trophy" style="font-size:40px; color:var(--text-muted); margin-bottom:20px;"></i>
+                    <h3 data-key="coming_soon">Tezliklə...</h3>
                 </div>
             </div>
 
             <div id="page-profile" class="page">
-                <h2 style="margin-top:0;">Profil</h2>
+                <h2 data-key="profile">Profil</h2>
                 <div class="card">
-                    <p>İstifadəçi ID:</p>
-                    <code id="my-uid" style="background:rgba(0,0,0,0.3); padding:5px; display:block; word-break:break-all;">...</code>
+                    <label style="font-size:12px; color:var(--text-muted);">Mənim ID Kodum (UID):</label>
+                    <div style="background:rgba(0,0,0,0.3); padding:10px; border-radius:10px; margin-top:5px; font-family:monospace; word-break:break-all;" id="my-uid">...</div>
                 </div>
             </div>
+
         </div>
 
         <div class="nav">
-            <div class="nav-item active" onclick="switchTab('home', this)"><i class="fa-solid fa-house"></i><span>Ana</span></div>
-            <div class="nav-item" onclick="switchTab('market', this)"><i class="fa-solid fa-bag-shopping"></i><span>Market</span></div>
-            <div style="position: relative; top: -45px;"><div class="scan-fab" onclick="openScanner()"><i class="fa-solid fa-expand"></i></div></div>
-            <div class="nav-item" onclick="switchTab('home', this)"><i class="fa-solid fa-chart-pie"></i><span>Stat</span></div>
-            <div class="nav-item" onclick="switchTab('profile', this)"><i class="fa-solid fa-user"></i><span>Profil</span></div>
+            <div class="nav-item active" onclick="switchTab('home', this)"><i class="fa-solid fa-house"></i><span data-key="nav_home">Ana</span></div>
+            <div class="nav-item" onclick="switchTab('market', this)"><i class="fa-solid fa-bag-shopping"></i><span data-key="market">Market</span></div>
+            <div class="nav-item" onclick="switchTab('leaderboard', this)"><i class="fa-solid fa-chart-simple"></i><span data-key="leaderboard">Liderlər</span></div>
+            <div class="nav-item" onclick="switchTab('profile', this)"><i class="fa-solid fa-user"></i><span data-key="profile">Profil</span></div>
         </div>
     </div>
 
@@ -188,6 +197,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
     <script>
+        // CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyBGEu8M7I6BSMrcMqd8t-mC1KWhHC-WubM",
             authDomain: "ecopoint-b3d60.firebaseapp.com",
@@ -198,133 +208,203 @@
             appId: "1:193692283784:web:c256a9642dd5688d0b003d",
             measurementId: "G-C5S5X92Z8Q"
         };
-
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
         const provider = new firebase.auth.GoogleAuthProvider();
 
-        // 1. GİRİŞ
-        function login() {
-            auth.signInWithRedirect(provider);
+        // --- DİL SİSTEMİ (AZ/EN) ---
+        let currentLang = 'az';
+        const translations = {
+            az: {
+                login_btn: "Google ilə giriş",
+                balance_title: "ÜMUMİ BALANS",
+                scan: "Skan Et",
+                send: "Xal Göndər",
+                about: "Haqqımızda",
+                learn_more: "Daha Çox",
+                market: "Market",
+                leaderboard: "Liderlər",
+                profile: "Profil",
+                coming_soon: "Tezliklə...",
+                nav_home: "Ana"
+            },
+            en: {
+                login_btn: "Login with Google",
+                balance_title: "TOTAL BALANCE",
+                scan: "Scan QR",
+                send: "Transfer",
+                about: "About Us",
+                learn_more: "Learn More",
+                market: "Market",
+                leaderboard: "Leaderboard",
+                profile: "Profile",
+                coming_soon: "Coming Soon...",
+                nav_home: "Home"
+            }
+        };
+
+        function toggleLang() {
+            currentLang = currentLang === 'az' ? 'en' : 'az';
+            document.getElementById('lang-btn').innerText = currentLang.toUpperCase();
+            updateTexts();
         }
 
-        auth.getRedirectResult().catch(e => console.error(e));
+        function updateTexts() {
+            document.querySelectorAll('[data-key]').forEach(el => {
+                const key = el.getAttribute('data-key');
+                if(translations[currentLang][key]) {
+                    el.innerText = translations[currentLang][key];
+                }
+            });
+        }
 
-        // 2. İSTİFADƏÇİ YOXLANIŞI
+        // --- GİRİŞ (FIXED: POPUP İLƏ) ---
+        function login() {
+            // Popup bəzi telefonlarda bloklana bilər, amma Redirect-dən daha təhlükəsizdir "ağ ekran" üçün
+            auth.signInWithPopup(provider).catch(error => {
+                alert("Giriş xətası: " + error.message);
+            });
+        }
+
+        function logout() {
+            auth.signOut().then(() => window.location.reload());
+        }
+
         auth.onAuthStateChanged(user => {
             if (user) {
                 document.getElementById('auth-view').style.display = 'none';
+                document.getElementById('app-view').style.display = 'flex';
                 
-                const appView = document.getElementById('app-view');
-                appView.style.display = 'flex';
-                setTimeout(() => { appView.style.opacity = '1'; }, 50);
-
                 document.getElementById('u-name').innerText = user.displayName;
                 document.getElementById('u-img').src = user.photoURL;
                 document.getElementById('my-uid').innerText = user.uid;
 
-                // --- VACİB: Yalnız sənin emailin üçün ADMIN paneli açılır ---
-                checkAdmin(user);
+                // Admin yoxlanışı
+                if(user.email === "greenlinegroup2026@gmail.com") {
+                    document.getElementById('admin-panel').style.display = 'block';
+                    document.getElementById('admin-badge').style.display = 'block';
+                    loadUsers();
+                }
 
+                // Bazanı yenilə
                 db.ref('users/' + user.uid + '/details').update({
                     name: user.displayName,
                     email: user.email,
-                    photo: user.photoURL,
-                    lastLogin: Date.now()
+                    photo: user.photoURL
                 });
 
+                // Balansı dinlə
                 db.ref('users/' + user.uid + '/balance').on('value', snap => {
                     document.getElementById('balance-display').innerText = snap.val() || 0;
                 });
-
             } else {
                 document.getElementById('auth-view').style.display = 'flex';
                 document.getElementById('app-view').style.display = 'none';
-                document.getElementById('app-view').style.opacity = '0';
             }
         });
 
-        // 3. ADMIN PANELİNİ YOXLAYAN FUNKSİYA
-        function checkAdmin(user) {
-            const myEmail = "greenlinegroup2026@gmail.com";
-            
-            if(user.email === myEmail) {
-                // Sənsənsə, hər şeyi göstər
-                document.getElementById('admin-panel').style.display = 'block';
-                document.getElementById('admin-tag').style.display = 'inline-block';
-                loadAdminUserList();
+        // --- KAMERA (SKANER) ---
+        let html5QrcodeScanner;
+
+        function startScanner() {
+            document.getElementById('scanner-modal').style.display = 'flex';
+            html5QrcodeScanner = new Html5Qrcode("reader");
+            html5QrcodeScanner.start(
+                { facingMode: "environment" }, 
+                { fps: 10, qrbox: 250 },
+                (decodedText) => {
+                    // Uğurlu skan
+                    alert("Skan olundu: " + decodedText);
+                    closeScanner();
+                    // Burda gələcəkdə zibil qutusu funksiyasını işə sala bilərsən
+                },
+                (errorMessage) => {
+                    // Oxuya bilməyəndə (boş burax)
+                }
+            ).catch(err => {
+                alert("Kamera xətası: " + err);
+                closeScanner();
+            });
+        }
+
+        function closeScanner() {
+            if(html5QrcodeScanner) {
+                html5QrcodeScanner.stop().then(() => {
+                    html5QrcodeScanner.clear();
+                    document.getElementById('scanner-modal').style.display = 'none';
+                });
             } else {
-                // Başqasıdırsa, gizlət
-                document.getElementById('admin-panel').style.display = 'none';
-                document.getElementById('admin-tag').style.display = 'none';
+                document.getElementById('scanner-modal').style.display = 'none';
             }
         }
 
-        function loadAdminUserList() {
-            db.ref('users').on('value', snap => {
-                const list = document.getElementById('admin-user-list');
-                list.innerHTML = '';
-                snap.forEach(u => {
-                    const info = u.val().details || {};
-                    const div = document.createElement('div');
-                    div.className = 'user-card';
-                    div.innerHTML = `<b>${info.name || 'Adsız'}</b><span>${u.key}</span>`;
-                    div.onclick = () => {
-                        document.getElementById('target-uid').value = u.key;
-                    };
-                    list.appendChild(div);
+        // --- XAL GÖNDƏRMƏ (TRANSFER) ---
+        function transferPoints() {
+            const receiverId = prompt(currentLang==='az' ? "Alıcının ID kodunu yaz:" : "Enter Receiver ID:");
+            if(!receiverId) return;
+            
+            const amount = parseInt(prompt(currentLang==='az' ? "Miqdar:" : "Amount:"));
+            if(!amount || amount <= 0) return alert("Səhv miqdar!");
+
+            const myUid = auth.currentUser.uid;
+
+            // Balansı yoxla
+            db.ref('users/' + myUid + '/balance').once('value', snap => {
+                const myBal = snap.val() || 0;
+                if(myBal < amount) return alert("Balansın çatmır!");
+
+                // Transfer əməliyyatı
+                db.ref('users/' + myUid + '/balance').set(myBal - amount);
+                
+                db.ref('users/' + receiverId + '/balance').once('value', rSnap => {
+                    const rBal = rSnap.val() || 0;
+                    db.ref('users/' + receiverId + '/balance').set(rBal + amount);
+                    alert("Göndərildi! ✅");
                 });
             });
         }
 
-        function adminSendPoints() {
-            const uid = document.getElementById('target-uid').value.trim();
+        // --- ADMIN ---
+        function adminSend() {
+            const uid = document.getElementById('target-uid').value;
             const amount = parseInt(document.getElementById('target-amount').value);
-            
-            if(!amount) return alert("Miqdar yaz!");
+            if(!uid || !amount) return;
 
-            if(uid === "") {
-                if(confirm("Hamıya " + amount + " EP göndəriləcək. Razısan?")) {
-                    db.ref('users').once('value', snap => {
-                        snap.forEach(u => {
-                            const current = (u.val().balance || 0);
-                            db.ref('users/' + u.key + '/balance').set(current + amount);
-                        });
-                        alert("Hamıya göndərildi!");
-                    });
-                }
-            } else {
-                db.ref('users/' + uid + '/balance').once('value', snap => {
-                    const current = snap.val() || 0;
-                    db.ref('users/' + uid + '/balance').set(current + amount);
-                    alert("Göndərildi!");
-                });
-            }
+            db.ref('users/' + uid + '/balance').once('value', snap => {
+                const current = snap.val() || 0;
+                db.ref('users/' + uid + '/balance').set(current + amount);
+                alert("Admin: Xal göndərildi!");
+            });
         }
 
+        function loadUsers() {
+            db.ref('users').on('value', snap => {
+                let html = "";
+                snap.forEach(u => {
+                    const info = u.val().details || {};
+                    html += `<div><b>${info.name}</b>: ${u.key} (${u.val().balance || 0})</div>`;
+                });
+                document.getElementById('admin-list').innerHTML = html;
+            });
+        }
+
+        // --- DİGƏR ---
         function toggleTheme() { document.body.classList.toggle('light-mode'); }
-        function toggleLang() { alert("Dil dəyişimi tezliklə!"); }
         
         function switchTab(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById('page-' + id).classList.add('active');
-            if(el) {
-                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-                el.classList.add('active');
-            }
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            if(el) el.classList.add('active');
         }
 
-        function openScanner() { alert("Kamera açılır..."); }
-        
-        function shareApp() {
-            if (navigator.share) {
-                navigator.share({ title: 'EcoPoint Pro', text: 'Mənə qoşul!', url: window.location.href });
-            } else { alert("Link kopyalandı!"); }
+        // Servis işçisini təmizlə (Keş problemi olmasın)
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for(let registration of registrations) { registration.unregister(); }
+            });
         }
-
-        function logout() { auth.signOut().then(() => window.location.reload()); }
-        if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
     </script>
 </body>
 </html>
