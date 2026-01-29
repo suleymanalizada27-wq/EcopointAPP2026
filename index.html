@@ -149,38 +149,41 @@
   appId: "1:193692283784:web:c256a9642dd5688d0b003d",
   measurementId: "G-C5S5X92Z8Q"
 };
-       firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.database();
-        const provider = new firebase.auth.GoogleAuthProvider();
+      // Əvvəlki konfiqurasiya (firebaseConfig) eyni qalır
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.database();
+const provider = new firebase.auth.GoogleAuthProvider();
 
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                document.getElementById('auth-view').style.display = 'none';
-                document.getElementById('app-view').style.display = 'flex';
-                document.getElementById('u-name').innerText = user.displayName;
-                document.getElementById('u-img').src = user.photoURL;
-                
-                // MƏLUMATLARI BAZAYA YAZAN HİSSƏ
-                db.ref('users/' + user.uid + '/details').set({
-                    name: user.displayName,
-                    email: user.email
-                });
+// POPUP ƏVƏZİNƏ REDİRECT İSTİFADƏ EDİRİK (Bu pəncərənin bağlanma problemini həll edir)
+function login() {
+    auth.signInWithRedirect(provider);
+}
 
-                if(user.email === "greenlinegroup2026@gmail.com") {
-                    document.getElementById('admin-panel').style.display = 'block';
-                    document.getElementById('admin-tag').style.display = 'block';
-                    loadAdminUserList();
-                }
-                
-                db.ref('users/' + user.uid + '/balance').on('value', snap => {
-                    document.getElementById('balance-display').innerText = snap.val() || 0;
-                });
-            } else {
-                document.getElementById('app-view').style.display = 'none';
-                document.getElementById('auth-view').style.display = 'flex';
-            }
+// Səhifə yenidən açılanda giriş nəticəsini yoxlayır
+auth.getRedirectResult().then((result) => {
+    if (result.user) {
+        console.log("Giriş uğurludur:", result.user.displayName);
+    }
+}).catch((error) => {
+    console.error("Xəta:", error.message);
+});
+
+// İstifadəçi vəziyyəti dəyişəndə (Giriş edəndə)
+auth.onAuthStateChanged(user => {
+    if (user) {
+        document.getElementById('auth-view').style.display = 'none';
+        document.getElementById('app-view').style.display = 'flex';
+        document.getElementById('u-name').innerText = user.displayName;
+        document.getElementById('u-img').src = user.photoURL;
+
+        // Məlumatları bazaya yazan hissə
+        db.ref('users/' + user.uid + '/details').set({
+            name: user.displayName,
+            email: user.email
         });
+    }
+});
 
         // SİYAHINI CANLI YÜKLƏYƏN FUNKSİYA
         function loadAdminUserList() {
@@ -214,4 +217,5 @@
     </script>
 </body>
 </html>
+
 
