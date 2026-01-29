@@ -32,7 +32,9 @@
         #auth-view { position: fixed; inset: 0; z-index: 5000; background: radial-gradient(circle at top right, #004d3d, var(--bg-body)); display: flex; flex-direction: column; justify-content: flex-end; padding: 40px; }
         .auth-btn { width: 100%; padding: 18px; background: #fff; color: #000; border: none; border-radius: 18px; font-weight: 700; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 12px; cursor: pointer; }
         
-        #app-view { display: none; flex: 1; flex-direction: column; opacity: 0; transition: opacity 0.5s; }
+        /* DÜZƏLİŞ: Opacity problemi üçün style */
+        #app-view { display: none; flex: 1; flex-direction: column; opacity: 0; transition: opacity 0.5s ease-in-out; }
+        
         .header { padding: 50px 20px 15px; display: flex; justify-content: space-between; align-items: center; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); z-index: 100; }
         .user-chip { display: flex; align-items: center; gap: 12px; background: var(--bg-card); padding: 6px 16px 6px 6px; border-radius: 50px; border: 1px solid var(--border); }
         .u-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--primary); }
@@ -123,6 +125,13 @@
                     <div class="act-btn" onclick="window.open('https://greenlinegroupazerbaijan2026.netlify.app/', '_blank')"><div class="act-icon"><i class="fa-solid fa-circle-info"></i></div><span style="font-size: 12px;">Məlumat</span></div>
                 </div>
             </div>
+            
+            <div id="page-market" class="page">
+                <center>Market tezliklə...</center>
+            </div>
+             <div id="page-profile" class="page">
+                <center>Profil Parametrləri</center>
+            </div>
         </div>
 
         <div class="nav">
@@ -139,53 +148,84 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
     <script>
-        const firebaseConfig ={
-  apiKey: "AIzaSyBGEu8M7I6BSMrcMqd8t-mC1KWhHC-WubM",
-  authDomain: "ecopoint-b3d60.firebaseapp.com",
-  databaseURL: "https://ecopoint-b3d60-default-rtdb.firebaseio.com",
-  projectId: "ecopoint-b3d60",
-  storageBucket: "ecopoint-b3d60.firebasestorage.app",
-  messagingSenderId: "193692283784",
-  appId: "1:193692283784:web:c256a9642dd5688d0b003d",
-  measurementId: "G-C5S5X92Z8Q"
-};
-      // Əvvəlki konfiqurasiya (firebaseConfig) eyni qalır
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.database();
-const provider = new firebase.auth.GoogleAuthProvider();
+        const firebaseConfig = {
+            apiKey: "AIzaSyBGEu8M7I6BSMrcMqd8t-mC1KWhHC-WubM",
+            authDomain: "ecopoint-b3d60.firebaseapp.com",
+            databaseURL: "https://ecopoint-b3d60-default-rtdb.firebaseio.com",
+            projectId: "ecopoint-b3d60",
+            storageBucket: "ecopoint-b3d60.firebasestorage.app",
+            messagingSenderId: "193692283784",
+            appId: "1:193692283784:web:c256a9642dd5688d0b003d",
+            measurementId: "G-C5S5X92Z8Q"
+        };
 
-// POPUP ƏVƏZİNƏ REDİRECT İSTİFADƏ EDİRİK (Bu pəncərənin bağlanma problemini həll edir)
-function login() {
-    auth.signInWithRedirect(provider);
-}
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+        const provider = new firebase.auth.GoogleAuthProvider();
 
-// Səhifə yenidən açılanda giriş nəticəsini yoxlayır
-auth.getRedirectResult().then((result) => {
-    if (result.user) {
-        console.log("Giriş uğurludur:", result.user.displayName);
-    }
-}).catch((error) => {
-    console.error("Xəta:", error.message);
-});
+        // 1. DÜZƏLİŞ: Login funksiyası (Redirect metodu ilə)
+        function login() {
+            auth.signInWithRedirect(provider);
+        }
 
-// İstifadəçi vəziyyəti dəyişəndə (Giriş edəndə)
-auth.onAuthStateChanged(user => {
-    if (user) {
-        document.getElementById('auth-view').style.display = 'none';
-        document.getElementById('app-view').style.display = 'flex';
-        document.getElementById('u-name').innerText = user.displayName;
-        document.getElementById('u-img').src = user.photoURL;
-
-        // Məlumatları bazaya yazan hissə
-        db.ref('users/' + user.uid + '/details').set({
-            name: user.displayName,
-            email: user.email
+        // Redirect-dən qayıdanda nəticəni yoxlayır
+        auth.getRedirectResult().then((result) => {
+            if (result.user) {
+                console.log("Giriş uğurludur:", result.user.displayName);
+            }
+        }).catch((error) => {
+            console.error("Xəta:", error.message);
         });
-    }
-});
 
-        // SİYAHINI CANLI YÜKLƏYƏN FUNKSİYA
+        function logout() {
+            auth.signOut().then(() => {
+                window.location.reload();
+            });
+        }
+
+        // 2. DÜZƏLİŞ: Ekranın görünməsi üçün Opacity tənzimləməsi
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // Giriş səhifəsini gizlət
+                document.getElementById('auth-view').style.display = 'none';
+                
+                // Əsas tətbiqi göstər və şəffaflığı 1 et
+                const appView = document.getElementById('app-view');
+                appView.style.display = 'flex';
+                
+                // Animasiya üçün kiçik gecikmə (10ms)
+                setTimeout(() => {
+                    appView.style.opacity = '1';
+                }, 10);
+
+                // İstifadəçi məlumatlarını doldur
+                document.getElementById('u-name').innerText = user.displayName;
+                document.getElementById('u-img').src = user.photoURL;
+
+                // Məlumatları bazaya yaz
+                db.ref('users/' + user.uid + '/details').set({
+                    name: user.displayName,
+                    email: user.email,
+                    photo: user.photoURL
+                });
+
+                // Balansı dinlə
+                db.ref('users/' + user.uid + '/balance').on('value', snap => {
+                    document.getElementById('balance-display').innerText = snap.val() || 0;
+                });
+                
+                // Admin siyahısını yüklə (əgər admin panel açıqdırsa)
+                loadAdminUserList();
+            } else {
+                // Çıxış edilibsə
+                document.getElementById('auth-view').style.display = 'flex';
+                document.getElementById('app-view').style.display = 'none';
+                document.getElementById('app-view').style.opacity = '0';
+            }
+        });
+
+        // Admin Panel üçün funksiya
         function loadAdminUserList() {
             db.ref('users').on('value', snap => {
                 const listDiv = document.getElementById('admin-user-list');
@@ -206,16 +246,28 @@ auth.onAuthStateChanged(user => {
             });
         }
         
-        // Digər skan və tab funksiyaları eynidir
-        function login() { auth.signInWithPopup(provider); }
-        function logout() { auth.signOut(); }
+        // Tab Dəyişmə
         function switchTab(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById('page-' + id).classList.add('active');
+            const target = document.getElementById('page-' + id);
+            if(target) target.classList.add('active');
+            
+            // Naviqasiya rəngini dəyiş
+            if(el) {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                el.classList.add('active');
+            }
         }
-        if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+
+        // Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+        
+        // Boş funksiyalar (Xəta verməməsi üçün)
+        function openScanner() { alert('Skaner tezliklə aktiv olacaq!'); }
+        function openSendModal() { alert('Göndərmə paneli tezliklə!'); }
+        function adminSendPoints() { alert('Yalnız adminlər üçündür!'); }
     </script>
 </body>
 </html>
-
-
