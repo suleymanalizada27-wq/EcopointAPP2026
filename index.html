@@ -6,6 +6,8 @@
     <meta name="theme-color" content="#0f172a">
     <title>EcoPoint Pro</title>
     
+    <link rel="manifest" href="manifest.json">
+
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
@@ -34,7 +36,7 @@
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         
-        /* Body - Scroll və ölçü tənzimləmələri */
+        /* Body Tənzimləmələri (Qara ekran problemini həll edir) */
         body { margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-body); color: var(--text-main); height: 100vh; width: 100vw; overflow: hidden; display: flex; flex-direction: column; }
 
         /* GİRİŞ EKRANI */
@@ -51,23 +53,25 @@
         .header-actions { display: flex; gap: 10px; }
         .icon-btn { width: 40px; height: 40px; border-radius: 50%; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 700; font-size: 12px; }
 
-        /* Məzmun */
+        /* Məzmun Sahəsi */
         .content { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 100px; width: 100%; }
         .page { display: none; width: 100%; }
         .page.active { display: block; animation: fadeIn 0.3s; }
         
         .card { background: var(--bg-card); border-radius: 24px; padding: 25px; border: 1px solid var(--border); margin-bottom: 15px; width: 100%; }
+
+        /* Balans Kartı */
         .balance-hero { background: linear-gradient(135deg, var(--bg-card), #000); border: 1px solid var(--primary); padding: 30px 25px; position: relative; overflow: hidden; }
         .balance-val { font-size: 48px; font-weight: 800; color: var(--text-main); }
 
-        /* Grid */
+        /* Düymələr Qridi */
         .action-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 25px 0; }
         .act-btn { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 15px; display: flex; flex-direction: row; align-items: center; gap: 12px; cursor: pointer; }
         .act-icon { width: 40px; height: 40px; background: rgba(0, 255, 136, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 18px; }
         .act-text { font-size: 13px; font-weight: 600; }
 
         /* Admin və Transfer Modalları */
-        .modal-box { display: none; border: 1px solid var(--border); background: var(--bg-card); border-radius: 24px; padding: 20px; margin-bottom: 20px; }
+        .modal-box { display: none; border: 1px solid var(--border); background: var(--bg-card); border-radius: 24px; padding: 20px; margin-bottom: 20px; position: relative; z-index: 2000; }
         .modal-box.active { display: block; animation: fadeIn 0.3s; }
         
         .modal-input { width: 100%; background: var(--bg-body); border: 1px solid var(--border); padding: 15px; color: var(--text-main); border-radius: 15px; margin-bottom: 10px; font-family: inherit; }
@@ -75,19 +79,19 @@
         .btn-primary { background: var(--primary); color: #000; }
         .btn-cancel { background: #ef4444; color: #fff; }
 
-        /* YENİ: Tətbiqi Yüklə Düyməsi (Başlanğıcda gizli) */
-        #install-box { display: none; background: linear-gradient(90deg, var(--primary), #004d3d); color: #000; cursor: pointer; border: none; }
+        /* Tətbiqi Yüklə Düyməsi (MƏCBURİ GÖRÜNƏN) */
+        #install-box { display: flex; background: linear-gradient(90deg, var(--primary), #004d3d); color: #000; cursor: pointer; border: none; flex-direction:row; align-items:center; justify-content:space-between; padding:15px 25px; }
         
-        /* YENİ: Modern Kamera Modalı */
+        /* Modern Kamera Modalı */
         #scanner-modal { display: none; position: fixed; inset: 0; background: #000; z-index: 6000; align-items: center; justify-content: center; }
         #reader { width: 100%; height: 100%; object-fit: cover; }
         
-        /* Skaner Çərçivəsi (Modern) */
+        /* Lazer Skaner Effekti */
         .scan-overlay { position: absolute; width: 250px; height: 250px; border: 4px solid var(--primary); border-radius: 20px; box-shadow: 0 0 0 100vh rgba(0,0,0,0.7); z-index: 6002; pointer-events: none; }
         .scan-line { width: 100%; height: 2px; background: var(--primary); position: absolute; animation: scanAnim 2s infinite; box-shadow: 0 0 10px var(--primary); }
         .close-scan { position: absolute; top: 40px; right: 20px; color: white; background: rgba(255,0,0,0.8); padding: 10px 20px; border-radius: 10px; z-index: 6003; cursor: pointer; font-weight: bold; font-size: 14px; }
 
-        /* Nav */
+        /* Naviqasiya */
         .nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); padding: 15px 25px 35px; display: flex; justify-content: space-between; border-top: 1px solid var(--border); z-index: 1000; }
         .nav-item { display: flex; flex-direction: column; align-items: center; gap: 5px; color: var(--text-muted); font-size: 11px; font-weight: 600; cursor: pointer; }
         .nav-item.active { color: var(--primary); }
@@ -139,7 +143,7 @@
         <div class="content">
             <div id="page-home" class="page active">
                 
-                <div id="install-box" class="card" onclick="installApp()" style="display:none; flex-direction:row; align-items:center; justify-content:space-between; padding:15px 25px;">
+                <div id="install-box" class="card" onclick="installApp()">
                     <span style="font-weight:700;"><i class="fa-solid fa-download"></i> <span data-key="install_app">Tətbiqi Yüklə</span></span>
                     <i class="fa-solid fa-chevron-right"></i>
                 </div>
@@ -250,7 +254,7 @@
         const db = firebase.database();
         const provider = new firebase.auth.GoogleAuthProvider();
 
-        // --- DİL ---
+        // --- DİL SİSTEMİ ---
         let currentLang = 'az';
         const translations = {
             az: { 
@@ -276,7 +280,7 @@
                 const key = el.getAttribute('data-key');
                 if(translations[currentLang][key]) el.innerText = translations[currentLang][key];
             });
-            // Input placeholder-ləri dəyişmək üçün
+            // Placeholder-ləri dəyiş
             if(currentLang === 'en') {
                 document.getElementById('t-uid').placeholder = "Receiver UID";
                 document.getElementById('t-amount').placeholder = "Amount";
@@ -286,26 +290,31 @@
             }
         }
 
-        // --- GİRİŞ ---
+        // --- GİRİŞ FUNKSİYALARI ---
         function login() { auth.signInWithPopup(provider).catch(e => alert(e.message)); }
         function logout() { auth.signOut().then(() => window.location.reload()); }
 
+        // --- AUTH CHECKER ---
         auth.onAuthStateChanged(user => {
             if (user) {
+                // Ekranı dəyiş
                 document.getElementById('auth-view').style.display = 'none';
                 document.getElementById('app-view').style.display = 'flex';
                 
+                // Məlumatları doldur
                 document.getElementById('u-name').innerText = user.displayName;
                 document.getElementById('u-img').src = user.photoURL;
                 document.getElementById('my-uid').innerText = user.uid;
                 document.getElementById('my-email').innerText = user.email;
 
+                // Admin yoxlanışı
                 if(user.email === "greenlinegroup2026@gmail.com") {
                     document.getElementById('admin-panel').classList.add('active');
                     document.getElementById('admin-badge').style.display = 'block';
                     loadUsers();
                 }
 
+                // Baza yeniləmə
                 db.ref('users/'+user.uid+'/details').update({ name:user.displayName, email:user.email, photo:user.photoURL });
                 db.ref('users/'+user.uid+'/balance').on('value', s => { document.getElementById('balance-display').innerText = s.val()||0; });
             } else {
@@ -314,38 +323,29 @@
             }
         });
 
-        // --- PWA INSTALL SİSTEMİ ---
+        // --- TƏTBİQİ YÜKLƏMƏ FUNKSİYASI ---
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            document.getElementById('install-box').style.display = 'flex';
+            // Düymə onsuz da görünür
         });
 
         function installApp() {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((result) => {
-                    if (result.outcome === 'accepted') {
-                        document.getElementById('install-box').style.display = 'none';
-                    }
-                    deferredPrompt = null;
-                });
+                deferredPrompt.userChoice.then((result) => { deferredPrompt = null; });
+            } else {
+                // Əgər avtomatik yükləmə işləmirsə (məsələn iPhone-da)
+                alert(currentLang==='az' ? "Brauzer menyusundan 'Ana ekrana əlavə et' seçin." : "Select 'Add to Home Screen' from browser menu.");
             }
         }
 
-        // --- YENİ TRANSFER MODALI ---
+        // --- TRANSFER FUNKSİYALARI ---
         function toggleTransfer(show) {
             const modal = document.getElementById('transfer-modal');
-            if(show) {
-                modal.classList.add('active');
-                // Sürüşdürərək transferə gətiririk
-                modal.scrollIntoView({behavior: "smooth"});
-            } else {
-                modal.classList.remove('active');
-                document.getElementById('t-uid').value = '';
-                document.getElementById('t-amount').value = '';
-            }
+            if(show) { modal.classList.add('active'); modal.scrollIntoView({behavior: "smooth"}); } 
+            else { modal.classList.remove('active'); document.getElementById('t-uid').value = ''; document.getElementById('t-amount').value = ''; }
         }
 
         function confirmTransfer() {
@@ -357,7 +357,6 @@
 
             const uid = auth.currentUser.uid;
             
-            // Özünə göndərmə
             if(rid === uid) return alert("Özünə göndərə bilməzsən!");
 
             db.ref('users/'+uid+'/balance').once('value', s => {
@@ -366,8 +365,7 @@
                     alert(currentLang==='az' ? "Balansınız çatmır!" : "Insufficient balance!");
                     return;
                 }
-
-                // Transfer prosesi
+                // Transfer əməliyyatı
                 db.ref('users/'+uid+'/balance').set(bal - amt);
                 db.ref('users/'+rid+'/balance').once('value', r => {
                     const rBal = r.val() || 0;
@@ -378,28 +376,27 @@
             });
         }
 
-        // --- MODERN SKANER ---
+        // --- SKANER FUNKSİYALARI ---
         let scanner;
         function startScanner() {
             document.getElementById('scanner-modal').style.display = 'flex';
             scanner = new Html5Qrcode("reader");
             scanner.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, 
                 (txt) => { 
-                    alert("QR: " + txt); 
+                    alert("QR Kod: " + txt); 
                     closeScanner(); 
                 }, () => {}
             ).catch(err => {
-                alert("Kamera problemi: " + err);
+                alert("Kamera xətası: " + err);
                 closeScanner();
             });
         }
-
         function closeScanner() {
             if(scanner) scanner.stop().then(() => { scanner.clear(); document.getElementById('scanner-modal').style.display = 'none'; });
             else document.getElementById('scanner-modal').style.display = 'none';
         }
 
-        // --- ADMIN ---
+        // --- ADMIN FUNKSİYALARI ---
         function adminSend() {
             const uid = document.getElementById('target-uid').value;
             const amt = parseInt(document.getElementById('target-amount').value);
@@ -421,7 +418,8 @@
             if(el) el.classList.add('active');
         }
 
-        if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().then(r => r.forEach(i => i.unregister()));
+        // Service Worker
+        if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
     </script>
 </body>
 </html>
