@@ -36,7 +36,7 @@
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         
-        /* Body Tənzimləmələri (Qara ekran problemini həll edir) */
+        /* Body Tənzimləmələri */
         body { margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-body); color: var(--text-main); height: 100vh; width: 100vw; overflow: hidden; display: flex; flex-direction: column; }
 
         /* GİRİŞ EKRANI */
@@ -60,6 +60,14 @@
         
         .card { background: var(--bg-card); border-radius: 24px; padding: 25px; border: 1px solid var(--border); margin-bottom: 15px; width: 100%; }
 
+        /* YENİ: ECO-TIP (Məsləhət Kartı) STYLE */
+        .tip-card { background: linear-gradient(90deg, #004d3d, #1e293b); border-left: 4px solid var(--primary); padding: 15px; border-radius: 15px; margin-bottom: 20px; font-size: 13px; line-height: 1.5; width: 100%; }
+
+        /* YENİ: BADGES (Nişanlar) STYLE */
+        .badge-container { display: flex; gap: 10px; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .badge { width: 40px; height: 40px; border-radius: 50%; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-size: 18px; border: 2px solid #334155; opacity: 0.3; transition: 0.3s; }
+        .badge.active { opacity: 1; border-color: var(--primary); box-shadow: 0 0 10px var(--primary); color: var(--primary); }
+
         /* Balans Kartı */
         .balance-hero { background: linear-gradient(135deg, var(--bg-card), #000); border: 1px solid var(--primary); padding: 30px 25px; position: relative; overflow: hidden; }
         .balance-val { font-size: 48px; font-weight: 800; color: var(--text-main); }
@@ -79,7 +87,7 @@
         .btn-primary { background: var(--primary); color: #000; }
         .btn-cancel { background: #ef4444; color: #fff; }
 
-        /* Tətbiqi Yüklə Düyməsi (MƏCBURİ GÖRÜNƏN) */
+        /* Tətbiqi Yüklə Düyməsi */
         #install-box { display: flex; background: linear-gradient(90deg, var(--primary), #004d3d); color: #000; cursor: pointer; border: none; flex-direction:row; align-items:center; justify-content:space-between; padding:15px 25px; }
         
         /* Modern Kamera Modalı */
@@ -148,6 +156,11 @@
                     <i class="fa-solid fa-chevron-right"></i>
                 </div>
 
+                <div class="tip-card">
+                    <b style="color:var(--primary)"><i class="fa-regular fa-lightbulb"></i> Eco-Məsləhət:</b><br>
+                    <span id="eco-tip">Yüklənir...</span>
+                </div>
+
                 <div id="admin-panel" class="modal-box" style="border-color: var(--admin-color);">
                     <h3 style="color:var(--admin-color); margin-top:0;">ADMIN PANEL</h3>
                     <input type="text" id="target-uid" class="modal-input" placeholder="User UID">
@@ -174,6 +187,12 @@
                     <div style="display:flex; align-items:baseline; gap:10px; margin-top:5px;">
                         <div class="balance-val" id="balance-display">0</div>
                         <span style="color:var(--primary); font-weight:800;">EP</span>
+                    </div>
+
+                    <div class="badge-container">
+                        <div class="badge" id="b1" title="Yeni Başlayan"><i class="fa-solid fa-seedling"></i></div>
+                        <div class="badge" id="b2" title="Yaşıl Cəngavər"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div class="badge" id="b3" title="Eco Master"><i class="fa-solid fa-crown"></i></div>
                     </div>
                 </div>
 
@@ -254,6 +273,17 @@
         const db = firebase.database();
         const provider = new firebase.auth.GoogleAuthProvider();
 
+        // --- YENİ: ECO MƏSLƏHƏTLƏR SİYAHISI ---
+        const tips = [
+            "Bir plastik butulkanın təbiətdə yox olması 450 il çəkir!",
+            "Şüşə sonsuz sayda təkrar emal oluna bilən yeganə materialdır.",
+            "1 ton kağızın təkrar emalı 17 ağacı kəsilməkdən xilas edir.",
+            "Plastik qapaqları butulkadan ayırıb atmaq emalı asanlaşdırır.",
+            "Batareyaları adi zibilə atmaq torpağı zəhərləyir."
+        ];
+        // Təsadüfi məsləhət seçirik
+        document.getElementById('eco-tip').innerText = tips[Math.floor(Math.random()*tips.length)];
+
         // --- DİL SİSTEMİ ---
         let currentLang = 'az';
         const translations = {
@@ -316,7 +346,18 @@
 
                 // Baza yeniləmə
                 db.ref('users/'+user.uid+'/details').update({ name:user.displayName, email:user.email, photo:user.photoURL });
-                db.ref('users/'+user.uid+'/balance').on('value', s => { document.getElementById('balance-display').innerText = s.val()||0; });
+                
+                // Balansı izlə və NİŞANLARI (BADGES) YANDIR
+                db.ref('users/'+user.uid+'/balance').on('value', s => { 
+                    const bal = s.val()||0;
+                    document.getElementById('balance-display').innerText = bal;
+
+                    // YENİ: BADGE LOGIC
+                    if(bal >= 1) document.getElementById('b1').classList.add('active');
+                    if(bal >= 500) document.getElementById('b2').classList.add('active');
+                    if(bal >= 2000) document.getElementById('b3').classList.add('active');
+                });
+
             } else {
                 document.getElementById('auth-view').style.display = 'flex';
                 document.getElementById('app-view').style.display = 'none';
