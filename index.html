@@ -64,8 +64,8 @@
         .tip-card { background: linear-gradient(90deg, #004d3d, #1e293b); border-left: 4px solid var(--primary); padding: 15px; border-radius: 15px; margin-bottom: 20px; font-size: 13px; line-height: 1.5; width: 100%; }
 
         /* YENİ: BADGES (Nişanlar) STYLE */
-        .badge-container { display: flex; gap: 10px; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); }
-        .badge { width: 40px; height: 40px; border-radius: 50%; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-size: 18px; border: 2px solid #334155; opacity: 0.3; transition: 0.3s; }
+        .badge-container { display: flex; gap: 10px; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); justify-content: center; }
+        .badge { width: 45px; height: 45px; border-radius: 50%; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-size: 20px; border: 2px solid #334155; opacity: 0.3; transition: 0.3s; position: relative; }
         .badge.active { opacity: 1; border-color: var(--primary); box-shadow: 0 0 10px var(--primary); color: var(--primary); }
 
         /* Balans Kartı */
@@ -99,6 +99,16 @@
         .scan-line { width: 100%; height: 2px; background: var(--primary); position: absolute; animation: scanAnim 2s infinite; box-shadow: 0 0 10px var(--primary); }
         .close-scan { position: absolute; top: 40px; right: 20px; color: white; background: rgba(255,0,0,0.8); padding: 10px 20px; border-radius: 10px; z-index: 6003; cursor: pointer; font-weight: bold; font-size: 14px; }
 
+        /* YENİ: Professional Profil Stili */
+        .profile-header { display: flex; flex-direction: column; align-items: center; padding: 20px; text-align: center; }
+        .profile-img-large { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--primary); object-fit: cover; margin-bottom: 15px; box-shadow: 0 0 20px rgba(0,255,136,0.2); }
+        .profile-name { font-size: 22px; font-weight: 800; margin-bottom: 5px; }
+        .profile-email { color: var(--text-muted); font-size: 14px; }
+        .profile-uid { background: rgba(255,255,255,0.05); padding: 8px 15px; border-radius: 10px; margin-top: 15px; font-family: monospace; font-size: 12px; border: 1px solid var(--border); display: inline-block; }
+
+        /* Uğur Mesajı */
+        #success-msg { display:none; position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#059669; color:white; padding:10px 20px; border-radius:20px; z-index:7000; font-weight:bold; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+
         /* Naviqasiya */
         .nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); padding: 15px 25px 35px; display: flex; justify-content: space-between; border-top: 1px solid var(--border); z-index: 1000; }
         .nav-item { display: flex; flex-direction: column; align-items: center; gap: 5px; color: var(--text-muted); font-size: 11px; font-weight: 600; cursor: pointer; }
@@ -109,6 +119,8 @@
     </style>
 </head>
 <body>
+
+    <div id="success-msg"><i class="fa-solid fa-check-circle"></i> Uğurla Göndərildi!</div>
 
     <div id="scanner-modal">
         <div class="close-scan" onclick="closeScanner()">
@@ -193,6 +205,7 @@
                         <div class="badge" id="b1" title="Yeni Başlayan"><i class="fa-solid fa-seedling"></i></div>
                         <div class="badge" id="b2" title="Yaşıl Cəngavər"><i class="fa-solid fa-shield-halved"></i></div>
                         <div class="badge" id="b3" title="Eco Master"><i class="fa-solid fa-crown"></i></div>
+                        <div class="badge" id="b4" title="Mərhəmətli (İlk Transfer)"><i class="fa-solid fa-heart"></i></div>
                     </div>
                 </div>
 
@@ -235,11 +248,21 @@
             <div id="page-profile" class="page">
                 <h2 data-key="profile">Profil</h2>
                 <div class="card">
-                    <label style="font-size:12px; color:var(--text-muted);">Mənim ID Kodum (UID):</label>
-                    <div style="background:rgba(0,0,0,0.3); padding:10px; border-radius:10px; margin-top:5px; font-family:monospace; word-break:break-all;" id="my-uid">...</div>
-                    <div style="margin-top:20px;">
-                         <p style="font-size:12px; opacity:0.7;">Email:</p>
-                         <b id="my-email">...</b>
+                    <div class="profile-header">
+                        <img src="" id="p-img" class="profile-img-large">
+                        <div class="profile-name" id="p-name">...</div>
+                        <div class="profile-email" id="p-email">...</div>
+                        <div class="profile-uid" id="p-uid">ID Yüklənir...</div>
+                    </div>
+                </div>
+                
+                <h3 style="margin-left:10px;">Medallarım</h3>
+                <div class="card">
+                    <div class="badge-container" style="justify-content: flex-start; flex-wrap: wrap;">
+                        <div class="badge" id="pb1"><i class="fa-solid fa-seedling"></i></div>
+                        <div class="badge" id="pb2"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div class="badge" id="pb3"><i class="fa-solid fa-crown"></i></div>
+                        <div class="badge" id="pb4"><i class="fa-solid fa-heart"></i></div>
                     </div>
                 </div>
             </div>
@@ -273,7 +296,6 @@
         const db = firebase.database();
         const provider = new firebase.auth.GoogleAuthProvider();
 
-        // --- YENİ: ECO MƏSLƏHƏTLƏR SİYAHISI ---
         const tips = [
             "Bir plastik butulkanın təbiətdə yox olması 450 il çəkir!",
             "Şüşə sonsuz sayda təkrar emal oluna bilən yeganə materialdır.",
@@ -281,10 +303,8 @@
             "Plastik qapaqları butulkadan ayırıb atmaq emalı asanlaşdırır.",
             "Batareyaları adi zibilə atmaq torpağı zəhərləyir."
         ];
-        // Təsadüfi məsləhət seçirik
         document.getElementById('eco-tip').innerText = tips[Math.floor(Math.random()*tips.length)];
 
-        // --- DİL SİSTEMİ ---
         let currentLang = 'az';
         const translations = {
             az: { 
@@ -310,7 +330,6 @@
                 const key = el.getAttribute('data-key');
                 if(translations[currentLang][key]) el.innerText = translations[currentLang][key];
             });
-            // Placeholder-ləri dəyiş
             if(currentLang === 'en') {
                 document.getElementById('t-uid').placeholder = "Receiver UID";
                 document.getElementById('t-amount').placeholder = "Amount";
@@ -320,42 +339,57 @@
             }
         }
 
-        // --- GİRİŞ FUNKSİYALARI ---
         function login() { auth.signInWithPopup(provider).catch(e => alert(e.message)); }
         function logout() { auth.signOut().then(() => window.location.reload()); }
 
-        // --- AUTH CHECKER ---
         auth.onAuthStateChanged(user => {
             if (user) {
-                // Ekranı dəyiş
                 document.getElementById('auth-view').style.display = 'none';
                 document.getElementById('app-view').style.display = 'flex';
                 
-                // Məlumatları doldur
+                if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+                    document.getElementById('install-box').style.display = 'none';
+                }
+
+                // Header və Köhnə Profil Doldurma
                 document.getElementById('u-name').innerText = user.displayName;
                 document.getElementById('u-img').src = user.photoURL;
-                document.getElementById('my-uid').innerText = user.uid;
-                document.getElementById('my-email').innerText = user.email;
 
-                // Admin yoxlanışı
+                // YENİ: Professional Profil Doldurma
+                document.getElementById('p-name').innerText = user.displayName;
+                document.getElementById('p-email').innerText = user.email;
+                document.getElementById('p-img').src = user.photoURL;
+                document.getElementById('p-uid').innerText = "UID: " + user.uid;
+
                 if(user.email === "greenlinegroup2026@gmail.com") {
                     document.getElementById('admin-panel').classList.add('active');
                     document.getElementById('admin-badge').style.display = 'block';
                     loadUsers();
                 }
 
-                // Baza yeniləmə
                 db.ref('users/'+user.uid+'/details').update({ name:user.displayName, email:user.email, photo:user.photoURL });
                 
-                // Balansı izlə və NİŞANLARI (BADGES) YANDIR
-                db.ref('users/'+user.uid+'/balance').on('value', s => { 
-                    const bal = s.val()||0;
+                // Balans və Medallar
+                db.ref('users/'+user.uid).on('value', s => { 
+                    const data = s.val() || {};
+                    const bal = data.balance || 0;
+                    const hasSent = data.hasSentFirst || false; // İlk göndəriş yoxlanışı
+
                     document.getElementById('balance-display').innerText = bal;
 
-                    // YENİ: BADGE LOGIC
-                    if(bal >= 1) document.getElementById('b1').classList.add('active');
-                    if(bal >= 500) document.getElementById('b2').classList.add('active');
-                    if(bal >= 2000) document.getElementById('b3').classList.add('active');
+                    // Balansa görə medallar
+                    updateBadge('b1', bal >= 1);
+                    updateBadge('b2', bal >= 500);
+                    updateBadge('b3', bal >= 2000);
+                    
+                    // İlk transfer medalı
+                    updateBadge('b4', hasSent);
+
+                    // Profil səhifəsindəki medallar
+                    updateBadge('pb1', bal >= 1);
+                    updateBadge('pb2', bal >= 500);
+                    updateBadge('pb3', bal >= 2000);
+                    updateBadge('pb4', hasSent);
                 });
 
             } else {
@@ -364,60 +398,91 @@
             }
         });
 
-        // --- TƏTBİQİ YÜKLƏMƏ FUNKSİYASI ---
+        function updateBadge(id, active) {
+            if(active) document.getElementById(id).classList.add('active');
+            else document.getElementById(id).classList.remove('active');
+        }
+
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            // Düymə onsuz da görünür
+        });
+
+        window.addEventListener('appinstalled', () => {
+            document.getElementById('install-box').style.display = 'none';
         });
 
         function installApp() {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((result) => { deferredPrompt = null; });
+                deferredPrompt.userChoice.then((result) => { 
+                    deferredPrompt = null; 
+                    if(result.outcome === 'accepted') {
+                         document.getElementById('install-box').style.display = 'none';
+                    }
+                });
             } else {
-                // Əgər avtomatik yükləmə işləmirsə (məsələn iPhone-da)
                 alert(currentLang==='az' ? "Brauzer menyusundan 'Ana ekrana əlavə et' seçin." : "Select 'Add to Home Screen' from browser menu.");
             }
         }
 
-        // --- TRANSFER FUNKSİYALARI ---
         function toggleTransfer(show) {
             const modal = document.getElementById('transfer-modal');
             if(show) { modal.classList.add('active'); modal.scrollIntoView({behavior: "smooth"}); } 
             else { modal.classList.remove('active'); document.getElementById('t-uid').value = ''; document.getElementById('t-amount').value = ''; }
         }
 
+        // --- YENİLƏNMİŞ TRANSFER FUNKSİYASI (24 SAAT LİMİTİ + ÖZÜNƏ QADAĞA + MEDAL) ---
         function confirmTransfer() {
             const rid = document.getElementById('t-uid').value.trim();
             const amt = parseInt(document.getElementById('t-amount').value);
-            
-            if(!rid) return alert(currentLang==='az' ? "ID daxil edin" : "Enter ID");
-            if(!amt || amt <= 0) return alert(currentLang==='az' ? "Düzgün miqdar yazın" : "Enter valid amount");
-
             const uid = auth.currentUser.uid;
             
-            if(rid === uid) return alert("Özünə göndərə bilməzsən!");
+            if(!rid) return alert("ID daxil edin");
+            if(!amt || amt <= 0) return alert("Düzgün miqdar yazın");
+            
+            // 1. Özünə göndərmək qadağası (Admin də daxil)
+            if(rid === uid) return alert("Özünə xal göndərə bilməzsən!");
 
-            db.ref('users/'+uid+'/balance').once('value', s => {
-                const bal = s.val() || 0;
-                if(bal < amt) {
-                    alert(currentLang==='az' ? "Balansınız çatmır!" : "Insufficient balance!");
-                    return;
+            db.ref('users/'+uid).once('value', s => {
+                const userData = s.val() || {};
+                const bal = userData.balance || 0;
+                
+                // 2. Balans yoxlanışı
+                if(bal < amt) return alert("Balansınız çatmır!");
+
+                // 3. 24 Saatlıq Limit Yoxlanışı
+                const lastTx = (userData.transactions && userData.transactions[rid]) || 0;
+                const now = Date.now();
+                const oneDay = 24 * 60 * 60 * 1000;
+
+                if (now - lastTx < oneDay) {
+                    return alert("Bu istifadəçiyə 24 saatda bir dəfə xal göndərə bilərsən!");
                 }
-                // Transfer əməliyyatı
+
+                // Hər şey qaydasındadırsa, göndər
                 db.ref('users/'+uid+'/balance').set(bal - amt);
+                
+                // Tarixçəni və 'hasSentFirst' statusunu yenilə
+                db.ref('users/'+uid+'/transactions/'+rid).set(now);
+                if (!userData.hasSentFirst) {
+                    db.ref('users/'+uid+'/hasSentFirst').set(true); // Medal qazanır
+                }
+
                 db.ref('users/'+rid+'/balance').once('value', r => {
                     const rBal = r.val() || 0;
                     db.ref('users/'+rid+'/balance').set(rBal + amt);
-                    alert(currentLang==='az' ? "Uğurla göndərildi! ✅" : "Sent successfully! ✅");
+                    
+                    // Uğur Mesajı və Modal Bağlanması
                     toggleTransfer(false);
+                    const msg = document.getElementById('success-msg');
+                    msg.style.display = 'block';
+                    setTimeout(() => { msg.style.display = 'none'; }, 3000);
                 });
             });
         }
 
-        // --- SKANER FUNKSİYALARI ---
         let scanner;
         function startScanner() {
             document.getElementById('scanner-modal').style.display = 'flex';
@@ -437,7 +502,6 @@
             else document.getElementById('scanner-modal').style.display = 'none';
         }
 
-        // --- ADMIN FUNKSİYALARI ---
         function adminSend() {
             const uid = document.getElementById('target-uid').value;
             const amt = parseInt(document.getElementById('target-amount').value);
@@ -450,7 +514,6 @@
             });
         }
 
-        // --- DİGƏR ---
         function toggleTheme() { document.body.classList.toggle('light-mode'); }
         function switchTab(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -459,7 +522,6 @@
             if(el) el.classList.add('active');
         }
 
-        // Service Worker
         if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
     </script>
 </body>
