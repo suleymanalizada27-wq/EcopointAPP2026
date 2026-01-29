@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0f172a">
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="icon" type="image/png" href="icon.png">
+    
+    <title>EcoPoint Pro</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WZWZ6L44WL"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-WZWZ6L44WL');
+    </script>
+
+    <style>
+        :root { --bg-body: #0f172a; --bg-card: #1e293b; --primary: #00ff88; --text-main: #ffffff; --text-muted: #94a3b8; --border: rgba(255,255,255,0.08); --admin-color: #f59e0b; }
+        body.light-mode { --bg-body: #f1f5f9; --bg-card: #ffffff; --primary: #059669; --text-main: #0f172a; --text-muted: #64748b; --border: rgba(0,0,0,0.08); }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        body { margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; transition: background 0.3s; overflow-x: hidden; }
+
+        #auth-view { position: fixed; inset: 0; z-index: 5000; background: radial-gradient(circle at top right, #004d3d, var(--bg-body)); display: flex; flex-direction: column; justify-content: flex-end; padding: 40px; }
+        .auth-btn { width: 100%; padding: 18px; background: #fff; color: #000; border: none; border-radius: 18px; font-weight: 700; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 12px; cursor: pointer; }
+        
+        #app-view { display: none; flex: 1; flex-direction: column; opacity: 0; transition: opacity 0.5s; }
+        .header { padding: 50px 20px 15px; display: flex; justify-content: space-between; align-items: center; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); z-index: 100; }
+        .user-chip { display: flex; align-items: center; gap: 12px; background: var(--bg-card); padding: 6px 16px 6px 6px; border-radius: 50px; border: 1px solid var(--border); }
+        .u-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--primary); }
+        .admin-badge { display: none; background: var(--admin-color); color: #000; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 800; margin-left: 5px; }
+
+        .content { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 120px; }
+        .page { display: none; animation: fadeIn 0.4s; }
+        .page.active { display: block; }
+        .card { background: var(--bg-card); border-radius: 24px; padding: 25px; border: 1px solid var(--border); margin-bottom: 15px; }
+        
+        /* ADMIN PANEL STILI */
+        .admin-box { display: none; border: 2px solid var(--admin-color); background: rgba(245, 158, 11, 0.05); }
+        .admin-input { width: 100%; background: var(--bg-body); border: 1px solid var(--border); padding: 15px; color: var(--text-main); border-radius: 15px; margin-bottom: 12px; font-size: 14px; }
+        
+        .user-scroll-area { margin-top: 15px; max-height: 250px; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 15px; padding: 10px; border: 1px solid var(--border); }
+        .user-card { padding: 12px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 4px; text-align: left; }
+        .user-card:last-child { border: none; }
+        .user-card b { color: var(--primary); font-size: 13px; }
+        .user-card span { font-size: 11px; color: var(--text-muted); }
+        .user-card i { font-size: 11px; color: var(--admin-color); font-style: normal; font-weight: 700; }
+
+        .balance-hero { background: linear-gradient(135deg, var(--bg-card), #000); border: 1px solid var(--primary); padding: 30px 25px; }
+        .balance-val { font-size: 48px; font-weight: 800; color: var(--text-main); }
+        
+        .nav { position: fixed; bottom: 0; width: 100%; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); padding: 15px 25px 35px; display: flex; justify-content: space-between; border-top: 1px solid var(--border); z-index: 1000; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 5px; color: var(--text-muted); font-size: 11px; font-weight: 600; cursor: pointer; }
+        .nav-item.active { color: var(--primary); }
+        .scan-fab { width: 75px; height: 75px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; color: #000; border: 8px solid var(--bg-body); position: relative; top: -45px; box-shadow: 0 10px 20px rgba(0, 255, 136, 0.4); cursor: pointer; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <div id="auth-view">
+        <div style="margin-top: auto; margin-bottom: 50px;">
+            <img src="icon.png" style="width: 130px; border-radius: 20px; margin-bottom: 25px;">
+            <h1 style="margin:0; font-size:42px;">EcoPoint<br><span style="color:var(--primary)">Pro</span></h1>
+            <p id="auth-subtitle" style="color:var(--text-muted); margin-bottom:35px;">Təmiz gələcək üçün.</p>
+            <button class="auth-btn" onclick="login()">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="24">
+                <span id="login-text">Google ilə giriş</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="app-view">
+        <div class="header">
+            <div class="user-chip" onclick="switchTab('profile')">
+                <img src="" id="u-img" class="u-avatar">
+                <div style="display:flex; flex-direction:column;">
+                    <span id="u-name" style="font-size: 14px; font-weight: 800;">...</span>
+                    <span id="admin-tag" class="admin-badge">ADMIN</span>
+                </div>
+            </div>
+            <div onclick="logout()" style="color: #ef4444; font-size: 24px; cursor: pointer;"><i class="fa-solid fa-right-from-bracket"></i></div>
+        </div>
+
+        <div class="content">
+            <div id="page-home" class="page active">
+                
+                <div id="admin-panel" class="card admin-box">
+                    <h3 style="color: var(--admin-color); margin-top: 0;"><i class="fa-solid fa-crown"></i> ADMIN PANEL</h3>
+                    <input type="text" id="target-uid" class="admin-input" placeholder="UID kodu">
+                    <input type="number" id="target-amount" class="admin-input" placeholder="EP miqdarı">
+                    <button class="admin-btn" onclick="adminSendPoints()" style="background:var(--admin-color); color:#000; width:100%; padding:15px; border:none; border-radius:15px; font-weight:700; cursor:pointer;">GÖNDƏR 🚀</button>
+                    
+                    <div style="margin-top:20px;">
+                        <span style="font-size: 12px; color: var(--admin-color); font-weight: 800;">CANLI İSTİFADƏÇİ SİYAHISI:</span>
+                        <div id="admin-user-list" class="user-scroll-area">
+                            <p style="font-size:11px; text-align:center; opacity:0.5;">Yüklənir...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card balance-hero">
+                    <div id="bal-label" style="font-size: 14px; color: var(--primary); font-weight: 800;">ÜMUMİ BALANS</div>
+                    <div style="display: flex; align-items: baseline; gap: 12px; margin-top: 10px;">
+                        <div class="balance-val" id="balance-display">0</div>
+                        <span style="color: var(--primary); font-weight: 800;">EP</span>
+                    </div>
+                </div>
+                
+                <div class="action-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 25px 0;">
+                    <div class="act-btn" onclick="openScanner()"><div class="act-icon"><i class="fa-solid fa-qrcode"></i></div><span style="font-size: 12px;">Skan</span></div>
+                    <div class="act-btn" onclick="openSendModal()"><div class="act-icon"><i class="fa-solid fa-paper-plane"></i></div><span style="font-size: 12px;">Göndər</span></div>
+                    <div class="act-btn" onclick="switchTab('market')"><div class="act-icon"><i class="fa-solid fa-bag-shopping"></i></div><span style="font-size: 12px;">Market</span></div>
+                    <div class="act-btn" onclick="window.open('https://greenlinegroupazerbaijan2026.netlify.app/', '_blank')"><div class="act-icon"><i class="fa-solid fa-circle-info"></i></div><span style="font-size: 12px;">Məlumat</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav">
+            <div class="nav-item active" onclick="switchTab('home', this)"><i class="fa-solid fa-house"></i><span>Ana</span></div>
+            <div class="nav-item" onclick="switchTab('market', this)"><i class="fa-solid fa-bag-shopping"></i><span>Market</span></div>
+            <div style="position: relative; top: -45px;"><div class="scan-fab" onclick="openScanner()"><i class="fa-solid fa-expand"></i></div></div>
+            <div class="nav-item" onclick="switchTab('home', this)"><i class="fa-solid fa-chart-pie"></i><span>Stat</span></div>
+            <div class="nav-item" onclick="switchTab('profile', this)"><i class="fa-solid fa-user"></i><span>Profil</span></div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBzBAPjqCxQV4IdB80Vz-sFc4xe7kBGEy4",
+            authDomain: "ecopointapp-6c554.firebaseapp.com",
+            databaseURL: "https://ecopointapp-6c554-default-rtdb.firebaseio.com",
+            projectId: "ecopointapp-6c554",
+            storageBucket: "ecopointapp-6c554.firebasestorage.app",
+            messagingSenderId: "268544427286",
+            appId: "1:268544427286:web:441676425e5728e97b7c37",
+            measurementId: "G-WZWZ6L44WL"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+        const provider = new firebase.auth.GoogleAuthProvider();
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                document.getElementById('auth-view').style.display = 'none';
+                document.getElementById('app-view').style.display = 'flex';
+                document.getElementById('u-name').innerText = user.displayName;
+                document.getElementById('u-img').src = user.photoURL;
+                
+                // MƏLUMATLARI BAZAYA YAZAN HİSSƏ
+                db.ref('users/' + user.uid + '/details').set({
+                    name: user.displayName,
+                    email: user.email
+                });
+
+                if(user.email === "greenlinegroup2026@gmail.com") {
+                    document.getElementById('admin-panel').style.display = 'block';
+                    document.getElementById('admin-tag').style.display = 'block';
+                    loadAdminUserList();
+                }
+                
+                db.ref('users/' + user.uid + '/balance').on('value', snap => {
+                    document.getElementById('balance-display').innerText = snap.val() || 0;
+                });
+            } else {
+                document.getElementById('app-view').style.display = 'none';
+                document.getElementById('auth-view').style.display = 'flex';
+            }
+        });
+
+        // SİYAHINI CANLI YÜKLƏYƏN FUNKSİYA
+        function loadAdminUserList() {
+            db.ref('users').on('value', snap => {
+                const listDiv = document.getElementById('admin-user-list');
+                listDiv.innerHTML = '';
+                snap.forEach(userSnap => {
+                    const data = userSnap.val();
+                    const info = data.details || { name: "Naməlum", email: "Email yoxdur" };
+                    const card = document.createElement('div');
+                    card.className = 'user-card';
+                    card.innerHTML = `
+                        <b>${info.name}</b>
+                        <span>${info.email}</span>
+                        <span style="font-size:9px; opacity:0.6;">UID: ${userSnap.key}</span>
+                        <i>Balans: ${data.balance || 0} EP</i>
+                    `;
+                    listDiv.appendChild(card);
+                });
+            });
+        }
+        
+        // Digər skan və tab funksiyaları eynidir
+        function login() { auth.signInWithPopup(provider); }
+        function logout() { auth.signOut(); }
+        function switchTab(id, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-' + id).classList.add('active');
+        }
+        if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+    </script>
+</body>
+</html>
