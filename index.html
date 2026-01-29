@@ -358,7 +358,7 @@
                 cancel: "Ləğv et", confirm: "Təsdiqlə", close: "Bağla",
                 eco_tip_title: "Eco-Məsləhət:", success_msg: "Uğurla Göndərildi!", medals_title: "Medallarım",
                 admin_panel: "ADMIN PANEL", send_admin: "Göndər 🚀",
-                // Alert Messages
+                // Alert Messages (YENİ)
                 alert_id: "ID daxil edin", alert_amount: "Düzgün miqdar yazın", alert_self: "Özünə xal göndərə bilməzsən!",
                 alert_balance: "Balansınız çatmır!", alert_24h: "Bu istifadəçiyə 24 saatda bir dəfə xal göndərə bilərsən!",
                 alert_sent: "Göndərildi!", alert_browser: "Brauzer menyusundan 'Ana ekrana əlavə et' seçin."
@@ -371,7 +371,7 @@
                 cancel: "Cancel", confirm: "Confirm", close: "Close",
                 eco_tip_title: "Eco-Tip:", success_msg: "Sent Successfully!", medals_title: "My Medals",
                 admin_panel: "ADMIN PANEL", send_admin: "Send 🚀",
-                // Alert Messages
+                // Alert Messages (YENİ)
                 alert_id: "Enter ID", alert_amount: "Enter valid amount", alert_self: "You cannot send points to yourself!",
                 alert_balance: "Insufficient balance!", alert_24h: "You can send points to this user once every 24 hours!",
                 alert_sent: "Sent!", alert_browser: "Select 'Add to Home Screen' from browser menu."
@@ -488,7 +488,7 @@
                     }
                 });
             } else {
-                // TƏRCÜMƏ EDİLMİŞ ALERT
+                // TƏRCÜMƏ EDİLMİŞ ALERT (YENİ)
                 alert(translations[currentLang]['alert_browser']);
             }
         }
@@ -499,12 +499,13 @@
             else { modal.classList.remove('active'); document.getElementById('t-uid').value = ''; document.getElementById('t-amount').value = ''; }
         }
 
-        // TRANSFER FUNKSİYASI (24 SAAT LİMİTİ + ÖZÜNƏ QADAĞA + MEDAL + TƏRCÜMƏLİ ALERTLƏR)
+        // TRANSFER FUNKSİYASI (TAM TƏRCÜMƏ OLUNMUŞ VERSIYA)
         function confirmTransfer() {
             const rid = document.getElementById('t-uid').value.trim();
             const amt = parseInt(document.getElementById('t-amount').value);
             const uid = auth.currentUser.uid;
             
+            // ALERT-lər artıq tərcümə obyektindən gəlir
             if(!rid) return alert(translations[currentLang]['alert_id']);
             if(!amt || amt <= 0) return alert(translations[currentLang]['alert_amount']);
             
