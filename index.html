@@ -35,15 +35,12 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body { margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; transition: background 0.3s; }
 
-        /* GİRİŞ EKRANI */
+        /* GİRİŞ EKRANI (Default olaraq görünür) */
         #auth-view { position: fixed; inset: 0; z-index: 5000; background: radial-gradient(circle at top right, #004d3d, var(--bg-body)); display: flex; flex-direction: column; justify-content: flex-end; padding: 40px; }
         .auth-btn { width: 100%; padding: 18px; background: #fff; color: #000; border: none; border-radius: 18px; font-weight: 700; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 12px; cursor: pointer; }
 
-        /* ƏSAS TƏTBİQ */
+        /* ƏSAS TƏTBİQ (Giriş edənə qədər gizlidir) */
         #app-view { display: none; flex: 1; flex-direction: column; }
-
-        /* YÜKLƏMƏ PƏRDƏSİ (Ağ ekranın qarşısını almaq üçün) */
-        #loading-overlay { display: none; position: fixed; inset: 0; background: var(--bg-body); z-index: 6000; align-items: center; justify-content: center; flex-direction: column; }
 
         /* Header */
         .header { padding: 50px 20px 15px; display: flex; justify-content: space-between; align-items: center; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); z-index: 100; position: sticky; top: 0; }
@@ -54,8 +51,8 @@
 
         /* Məzmun */
         .content { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 120px; }
-        .page { display: none; animation: fadeIn 0.3s; }
-        .page.active { display: block; }
+        .page { display: none; }
+        .page.active { display: block; animation: fadeIn 0.3s; }
         .card { background: var(--bg-card); border-radius: 24px; padding: 25px; border: 1px solid var(--border); margin-bottom: 15px; }
 
         /* Balans */
@@ -87,11 +84,6 @@
     </style>
 </head>
 <body>
-
-    <div id="loading-overlay">
-        <i class="fa-solid fa-spinner fa-spin" style="font-size: 40px; color: var(--primary);"></i>
-        <p style="margin-top:20px;">Sistem açılır...</p>
-    </div>
 
     <div id="scanner-modal">
         <div class="close-scan" onclick="closeScanner()">X BAĞLA</div>
@@ -241,18 +233,12 @@
             });
         }
 
-        // --- GİRİŞ (AĞ EKRAN PROBLEMINİ HƏLL EDƏN HİSSƏ) ---
+        // --- GİRİŞ (POPUP SİSTEMİ - AĞ EKRANI HƏLL EDİR) ---
         function login() {
-            // "Popup" metoduna qayıtdıq - bu səhifəni yeniləmir, ona görə "loading"də ilişib qalmır.
-            document.getElementById('loading-overlay').style.display = 'flex';
-            auth.signInWithPopup(provider)
-                .then(() => {
-                    // Giriş uğurlu olanda onAuthStateChanged işə düşəcək
-                })
-                .catch(error => {
-                    document.getElementById('loading-overlay').style.display = 'none';
-                    alert("Giriş xətası: " + error.message);
-                });
+            // Popup metodundan istifadə edirik (Redirect donma yarada bilər)
+            auth.signInWithPopup(provider).catch(error => {
+                alert("Giriş xətası: " + error.message);
+            });
         }
 
         function logout() {
@@ -260,17 +246,16 @@
         }
 
         auth.onAuthStateChanged(user => {
-            document.getElementById('loading-overlay').style.display = 'none'; // Pərdəni qaldır
-
             if (user) {
+                // Giriş edilibsə - Əsas ekranı aç
                 document.getElementById('auth-view').style.display = 'none';
-                document.getElementById('app-view').style.display = 'flex'; // Dərhal göstər
+                document.getElementById('app-view').style.display = 'flex';
                 
                 document.getElementById('u-name').innerText = user.displayName;
                 document.getElementById('u-img').src = user.photoURL;
                 document.getElementById('my-uid').innerText = user.uid;
 
-                // Admin yoxlanışı (Sənin emailin)
+                // Admin yoxlanışı
                 if(user.email === "greenlinegroup2026@gmail.com") {
                     document.getElementById('admin-panel').style.display = 'block';
                     document.getElementById('admin-badge').style.display = 'block';
@@ -289,6 +274,7 @@
                     document.getElementById('balance-display').innerText = snap.val() || 0;
                 });
             } else {
+                // Giriş edilməyibsə - Giriş ekranını göstər
                 document.getElementById('auth-view').style.display = 'flex';
                 document.getElementById('app-view').style.display = 'none';
             }
@@ -339,6 +325,7 @@
             const uid = document.getElementById('target-uid').value;
             const amount = parseInt(document.getElementById('target-amount').value);
             if(!uid || !amount) return;
+
             db.ref('users/' + uid + '/balance').once('value', snap => {
                 const current = snap.val() || 0;
                 db.ref('users/' + uid + '/balance').set(current + amount);
@@ -359,6 +346,7 @@
 
         // --- DİGƏR ---
         function toggleTheme() { document.body.classList.toggle('light-mode'); }
+        
         function switchTab(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById('page-' + id).classList.add('active');
@@ -366,7 +354,7 @@
             if(el) el.classList.add('active');
         }
 
-        // Keşi təmizlə
+        // Keşi təmizlə (Qara ekran probleminin kökünü kəsmək üçün)
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations().then(function(registrations) {
                 for(let registration of registrations) { registration.unregister(); }
