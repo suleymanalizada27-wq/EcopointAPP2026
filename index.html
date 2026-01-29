@@ -99,12 +99,47 @@
         .scan-line { width: 100%; height: 2px; background: var(--primary); position: absolute; animation: scanAnim 2s infinite; box-shadow: 0 0 10px var(--primary); }
         .close-scan { position: absolute; top: 40px; right: 20px; color: white; background: rgba(255,0,0,0.8); padding: 10px 20px; border-radius: 10px; z-index: 6003; cursor: pointer; font-weight: bold; font-size: 14px; }
 
-        /* YENİ: Professional Profil Stili */
-        .profile-header { display: flex; flex-direction: column; align-items: center; padding: 20px; text-align: center; }
-        .profile-img-large { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--primary); object-fit: cover; margin-bottom: 15px; box-shadow: 0 0 20px rgba(0,255,136,0.2); }
-        .profile-name { font-size: 22px; font-weight: 800; margin-bottom: 5px; }
-        .profile-email { color: var(--text-muted); font-size: 14px; }
-        .profile-uid { background: rgba(255,255,255,0.05); padding: 8px 15px; border-radius: 10px; margin-top: 15px; font-family: monospace; font-size: 12px; border: 1px solid var(--border); display: inline-block; }
+        /* YENİ: DAHA PROFESSIONAL PROFIL STILI */
+        .profile-header { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding: 40px 20px; 
+            text-align: center;
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            border-radius: 30px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+        .profile-header::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(0,255,136,0.05) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .profile-img-large { 
+            width: 120px; height: 120px; 
+            border-radius: 50%; 
+            border: 4px solid var(--primary); 
+            object-fit: cover; 
+            margin-bottom: 20px; 
+            box-shadow: 0 0 25px rgba(0,255,136,0.3);
+            z-index: 2;
+        }
+        .profile-name { font-size: 24px; font-weight: 800; margin-bottom: 5px; z-index: 2; }
+        .profile-email { color: var(--text-muted); font-size: 14px; z-index: 2; margin-bottom: 15px; }
+        .profile-uid { 
+            background: rgba(255,255,255,0.05); 
+            padding: 10px 20px; 
+            border-radius: 15px; 
+            font-family: monospace; 
+            font-size: 13px; 
+            border: 1px solid var(--border); 
+            display: inline-block; 
+            color: var(--primary);
+            z-index: 2;
+        }
 
         /* Uğur Mesajı */
         #success-msg { display:none; position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#059669; color:white; padding:10px 20px; border-radius:20px; z-index:7000; font-weight:bold; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
@@ -246,14 +281,11 @@
             </div>
 
             <div id="page-profile" class="page">
-                <h2 data-key="profile">Profil</h2>
-                <div class="card">
-                    <div class="profile-header">
-                        <img src="" id="p-img" class="profile-img-large">
-                        <div class="profile-name" id="p-name">...</div>
-                        <div class="profile-email" id="p-email">...</div>
-                        <div class="profile-uid" id="p-uid">ID Yüklənir...</div>
-                    </div>
+                <div class="profile-header">
+                    <img src="" id="p-img" class="profile-img-large">
+                    <div class="profile-name" id="p-name">...</div>
+                    <div class="profile-email" id="p-email">...</div>
+                    <div class="profile-uid" id="p-uid">ID Yüklənir...</div>
                 </div>
                 
                 <h3 style="margin-left:10px;">Medallarım</h3>
@@ -347,15 +379,17 @@
                 document.getElementById('auth-view').style.display = 'none';
                 document.getElementById('app-view').style.display = 'flex';
                 
+                // YENİ: Tətbiq (App) kimi açılanda install düyməsini qəti sil
                 if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
-                    document.getElementById('install-box').style.display = 'none';
+                    const iBox = document.getElementById('install-box');
+                    if(iBox) iBox.style.setProperty('display', 'none', 'important');
                 }
 
                 // Header və Köhnə Profil Doldurma
                 document.getElementById('u-name').innerText = user.displayName;
                 document.getElementById('u-img').src = user.photoURL;
 
-                // YENİ: Professional Profil Doldurma
+                // Professional Profil Doldurma
                 document.getElementById('p-name').innerText = user.displayName;
                 document.getElementById('p-email').innerText = user.email;
                 document.getElementById('p-img').src = user.photoURL;
@@ -410,7 +444,8 @@
         });
 
         window.addEventListener('appinstalled', () => {
-            document.getElementById('install-box').style.display = 'none';
+            const iBox = document.getElementById('install-box');
+            if(iBox) iBox.style.setProperty('display', 'none', 'important');
         });
 
         function installApp() {
@@ -419,7 +454,7 @@
                 deferredPrompt.userChoice.then((result) => { 
                     deferredPrompt = null; 
                     if(result.outcome === 'accepted') {
-                         document.getElementById('install-box').style.display = 'none';
+                         document.getElementById('install-box').style.setProperty('display', 'none', 'important');
                     }
                 });
             } else {
@@ -433,7 +468,7 @@
             else { modal.classList.remove('active'); document.getElementById('t-uid').value = ''; document.getElementById('t-amount').value = ''; }
         }
 
-        // --- YENİLƏNMİŞ TRANSFER FUNKSİYASI (24 SAAT LİMİTİ + ÖZÜNƏ QADAĞA + MEDAL) ---
+        // TRANSFER FUNKSİYASI (24 SAAT LİMİTİ + ÖZÜNƏ QADAĞA + MEDAL)
         function confirmTransfer() {
             const rid = document.getElementById('t-uid').value.trim();
             const amt = parseInt(document.getElementById('t-amount').value);
@@ -442,17 +477,14 @@
             if(!rid) return alert("ID daxil edin");
             if(!amt || amt <= 0) return alert("Düzgün miqdar yazın");
             
-            // 1. Özünə göndərmək qadağası (Admin də daxil)
             if(rid === uid) return alert("Özünə xal göndərə bilməzsən!");
 
             db.ref('users/'+uid).once('value', s => {
                 const userData = s.val() || {};
                 const bal = userData.balance || 0;
                 
-                // 2. Balans yoxlanışı
                 if(bal < amt) return alert("Balansınız çatmır!");
 
-                // 3. 24 Saatlıq Limit Yoxlanışı
                 const lastTx = (userData.transactions && userData.transactions[rid]) || 0;
                 const now = Date.now();
                 const oneDay = 24 * 60 * 60 * 1000;
@@ -461,20 +493,17 @@
                     return alert("Bu istifadəçiyə 24 saatda bir dəfə xal göndərə bilərsən!");
                 }
 
-                // Hər şey qaydasındadırsa, göndər
                 db.ref('users/'+uid+'/balance').set(bal - amt);
                 
-                // Tarixçəni və 'hasSentFirst' statusunu yenilə
                 db.ref('users/'+uid+'/transactions/'+rid).set(now);
                 if (!userData.hasSentFirst) {
-                    db.ref('users/'+uid+'/hasSentFirst').set(true); // Medal qazanır
+                    db.ref('users/'+uid+'/hasSentFirst').set(true); 
                 }
 
                 db.ref('users/'+rid+'/balance').once('value', r => {
                     const rBal = r.val() || 0;
                     db.ref('users/'+rid+'/balance').set(rBal + amt);
                     
-                    // Uğur Mesajı və Modal Bağlanması
                     toggleTransfer(false);
                     const msg = document.getElementById('success-msg');
                     msg.style.display = 'block';
