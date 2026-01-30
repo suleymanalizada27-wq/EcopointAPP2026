@@ -358,7 +358,7 @@
                 cancel: "Ləğv et", confirm: "Təsdiqlə", close: "Bağla",
                 eco_tip_title: "Eco-Məsləhət:", success_msg: "Uğurla Göndərildi!", medals_title: "Medallarım",
                 admin_panel: "ADMIN PANEL", send_admin: "Göndər 🚀",
-                // Alert Messages (YENİ)
+                // Alert Messages
                 alert_id: "ID daxil edin", alert_amount: "Düzgün miqdar yazın", alert_self: "Özünə xal göndərə bilməzsən!",
                 alert_balance: "Balansınız çatmır!", alert_24h: "Bu istifadəçiyə 24 saatda bir dəfə xal göndərə bilərsən!",
                 alert_sent: "Göndərildi!", alert_browser: "Brauzer menyusundan 'Ana ekrana əlavə et' seçin."
@@ -371,7 +371,7 @@
                 cancel: "Cancel", confirm: "Confirm", close: "Close",
                 eco_tip_title: "Eco-Tip:", success_msg: "Sent Successfully!", medals_title: "My Medals",
                 admin_panel: "ADMIN PANEL", send_admin: "Send 🚀",
-                // Alert Messages (YENİ)
+                // Alert Messages
                 alert_id: "Enter ID", alert_amount: "Enter valid amount", alert_self: "You cannot send points to yourself!",
                 alert_balance: "Insufficient balance!", alert_24h: "You can send points to this user once every 24 hours!",
                 alert_sent: "Sent!", alert_browser: "Select 'Add to Home Screen' from browser menu."
@@ -488,7 +488,7 @@
                     }
                 });
             } else {
-                // TƏRCÜMƏ EDİLMİŞ ALERT (YENİ)
+                // TƏRCÜMƏ EDİLMİŞ ALERT
                 alert(translations[currentLang]['alert_browser']);
             }
         }
@@ -499,13 +499,12 @@
             else { modal.classList.remove('active'); document.getElementById('t-uid').value = ''; document.getElementById('t-amount').value = ''; }
         }
 
-        // TRANSFER FUNKSİYASI (TAM TƏRCÜMƏ OLUNMUŞ VERSIYA)
+        // TRANSFER FUNKSİYASI (24 SAAT LİMİTİ + ÖZÜNƏ QADAĞA + MEDAL + TƏRCÜMƏLİ ALERTLƏR)
         function confirmTransfer() {
             const rid = document.getElementById('t-uid').value.trim();
             const amt = parseInt(document.getElementById('t-amount').value);
             const uid = auth.currentUser.uid;
             
-            // ALERT-lər artıq tərcümə obyektindən gəlir
             if(!rid) return alert(translations[currentLang]['alert_id']);
             if(!amt || amt <= 0) return alert(translations[currentLang]['alert_amount']);
             
@@ -573,7 +572,7 @@
         }
         function loadUsers() {
             db.ref('users').on('value', s => {
-                let h = ""; s.forEach(u => h += `<div style="padding:5px; border-bottom:1px solid #333;"><b>${u.val().details?.name}</b><br><small>${u.key}</small></div>`);
+                let h = ""; s.forEach(u => h += <div style="padding:5px; border-bottom:1px solid #333;"><b>${u.val().details?.name}</b><br><small>${u.key}</small></div>);
                 document.getElementById('admin-list').innerHTML = h;
             });
         }
@@ -588,129 +587,5 @@
 
         if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
     </script>
-    <div id="eco-chat-widget">
-    <button id="chat-toggle-btn" onclick="toggleChat()">
-        🌱
-    </button>
-        <section class="roadmap-section">
-    <h2 style="text-align: center; color: #2c3e50; margin-bottom: 40px;">🚀 Layihənin İnkişaf Planı</h2>
-    
-    <div class="timeline">
-        <div class="container left">
-            <div class="content">
-                <h2>Yanvar 2026</h2>
-                <p>💡 <b>İdeyanın Yaranması:</b> EcoPoint konsepsiyası və "Green Line" gənclər qrupunun formalaşdırılması.</p>
-            </div>
-        </div>
-        
-        <div class="container right">
-            <div class="content">
-                <h2>Fevral 2026</h2>
-                <p>💻 <b>Prototip:</b> Vebsaytın hazırlanması və dizayn eskizlərinin (rəsmlərin) çəkilməsi.</p>
-            </div>
-        </div>
-
-        <div class="container left">
-            <div class="content">
-                <h2>Mart 2026</h2>
-                <p>🤖 <b>AI İnteqrasiyası:</b> Tullantı tanıyan süni intellekt modelinin test edilməsi.</p>
-            </div>
-        </div>
-
-        <div class="container right">
-            <div class="content">
-                <h2>Aprel 2026</h2>
-                <p>🌍 <b>Pilot Layihə:</b> Bakıda ilk "Ağıllı Zibil Qutusu"nun test üçün quraşdırılması.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<style>
-    /* Timeline Dizaynı */
-    .roadmap-section {
-        background-color: #f4fbf7;
-        padding: 50px 0;
-        font-family: 'Segoe UI', sans-serif;
-    }
-
-    .timeline {
-        position: relative;
-        max-width: 800px;
-        margin: 0 auto;
-    }
-
-    /* Ortadakı Yaşıl Xətt */
-    .timeline::after {
-        content: '';
-        position: absolute;
-        width: 6px;
-        background-color: #2ecc71;
-        top: 0;
-        bottom: 0;
-        left: 50%;
-        margin-left: -3px;
-        border-radius: 5px;
-    }
-
-    /* Qutular */
-    .container {
-        padding: 10px 40px;
-        position: relative;
-        background-color: inherit;
-        width: 50%;
-        box-sizing: border-box;
-    }
-
-    /* Sol və Sağ tərəflər */
-    .left { left: 0; }
-    .right { left: 50%; }
-
-    /* Ortadakı dairələr */
-    .container::after {
-        content: '';
-        position: absolute;
-        width: 20px;
-        height: 20px;
-        right: -10px; /* Sol tərəf üçün */
-        background-color: white;
-        border: 4px solid #27ae60;
-        top: 15px;
-        border-radius: 50%;
-        z-index: 1;
-    }
-
-    .right::after { left: -10px; } /* Sağ tərəf üçün düzəliş */
-
-    /* Mətn Qutusu */
-    .content {
-        padding: 20px 30px;
-        background-color: white;
-        position: relative;
-        border-radius: 15px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        border-left: 5px solid #2ecc71;
-    }
-
-    .content h2 {
-        color: #27ae60;
-        margin-top: 0;
-        font-size: 18px;
-    }
-
-    .content p {
-        margin-bottom: 0;
-        color: #555;
-    }
-
-    /* Mobil üçün düzəliş (Responsive) */
-    @media screen and (max-width: 600px) {
-        .timeline::after { left: 31px; }
-        .container { width: 100%; padding-left: 70px; padding-right: 25px; }
-        .left::after, .right::after { left: 18px; }
-        .right { left: 0%; }
-    }
-</style>
 </body>
 </html>
-
