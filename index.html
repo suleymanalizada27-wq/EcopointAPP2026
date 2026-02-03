@@ -570,13 +570,14 @@
                 alert(translations[currentLang]['alert_sent']); 
             });
         }
-        function loadUsers() {
-            db.ref('users').on('value', s => {
-                let h = ""; s.forEach(u => h += <div style="padding:5px; border-bottom:1px solid #333;"><b>${u.val().details?.name}</b><br><small>${u.key}</small></div>);
-                document.getElementById('admin-list').innerHTML = h;
-            });
-        }
-
+       function loadUsers() {
+    db.ref('users').on('value', s => {
+        let h = ""; 
+        // HTML kodunu ` ` (backtick) işarələri arasına aldıq
+        s.forEach(u => h += `<div style="padding:5px; border-bottom:1px solid #333;"><b>${u.val().details?.name}</b><br><small>${u.key}</small></div>`);
+        document.getElementById('admin-list').innerHTML = h;
+    });
+}
         function toggleTheme() { document.body.classList.toggle('light-mode'); }
         function switchTab(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -589,3 +590,4 @@
     </script>
 </body>
 </html>
+
